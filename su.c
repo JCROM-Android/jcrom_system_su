@@ -486,10 +486,12 @@ int main(int argc, char *argv[])
     ctx.umask = umask(027);
 
     // only allow su on debuggable builds
+/*
     if (strcmp("1", debuggable) != 0) {
         ALOGE("Root access is disabled on non-debug builds");
         deny(&ctx);
     }
+*/
 
     // enforce persist.sys.root_access on non-eng builds for apps
     if (ctx.from.uid != AID_SHELL && ctx.from.uid != AID_ROOT &&
