@@ -476,12 +476,12 @@ int main(int argc, char *argv[])
     if (data != NULL) {
         len = strlen(data);
         if (len >= PROPERTY_VALUE_MAX)
-            memcpy(enabled, "1", 2);
+            memcpy(enabled, "0", 2);
         else
             memcpy(enabled, data, len + 1);
         free(data);
     } else
-        memcpy(enabled, "1", 2);
+        memcpy(enabled, "0", 2);
 
     ctx.umask = umask(027);
 
