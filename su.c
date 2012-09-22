@@ -467,10 +467,10 @@ int main(int argc, char *argv[])
     get_property(data, debuggable, "ro.debuggable", "0");
     free(data);
 
-    data = read_file("/system/build.prop", &sz);
-    get_property(data, cm_version, "ro.cm.version", "");
-    get_property(data, build_type, "ro.build.type", "");
-    free(data);
+    //data = read_file("/system/build.prop", &sz);
+    //get_property(data, cm_version, "ro.cm.version", "");
+    //get_property(data, build_type, "ro.build.type", "");
+    //free(data);
 
     data = read_file("/data/property/persist.sys.root_access", &sz);
     if (data != NULL) {
@@ -485,28 +485,24 @@ int main(int argc, char *argv[])
 
     ctx.umask = umask(027);
 
-    // CyanogenMod-specific behavior
-    if (strlen(cm_version) > 0) {
-        // only allow su on debuggable builds
-        if (strcmp("1", debuggable) != 0) {
-            ALOGE("Root access is disabled on non-debug builds");
-            deny(&ctx);
-        }
+    // only allow su on debuggable builds
+    if (strcmp("1", debuggable) != 0) {
+        ALOGE("Root access is disabled on non-debug builds");
+        deny(&ctx);
+    }
 
-        // enforce persist.sys.root_access on non-eng builds for apps
-        if (strcmp("eng", build_type) != 0 &&
-                ctx.from.uid != AID_SHELL && ctx.from.uid != AID_ROOT &&
-                (atoi(enabled) & CM_ROOT_ACCESS_APPS_ONLY) != CM_ROOT_ACCESS_APPS_ONLY ) {
-            ALOGE("Apps root access is disabled by system setting - enable it under settings -> developer options");
-            deny(&ctx);
-        }
+    // enforce persist.sys.root_access on non-eng builds for apps
+    if (ctx.from.uid != AID_SHELL && ctx.from.uid != AID_ROOT &&
+            (atoi(enabled) & CM_ROOT_ACCESS_APPS_ONLY) != CM_ROOT_ACCESS_APPS_ONLY ) {
+        ALOGE("Apps root access is disabled by system setting - enable it under settings -> developer options");
+        deny(&ctx);
+    }
 
-        // disallow su in a shell if appropriate
-        if (ctx.from.uid == AID_SHELL &&
-                (atoi(enabled) & CM_ROOT_ACCESS_ADB_ONLY) != CM_ROOT_ACCESS_ADB_ONLY ) {
-            ALOGE("Shell root access is disabled by a system setting - enable it under settings -> developer options");
-            deny(&ctx);
-        }
+    // disallow su in a shell if appropriate
+    if (ctx.from.uid == AID_SHELL &&
+            (atoi(enabled) & CM_ROOT_ACCESS_ADB_ONLY) != CM_ROOT_ACCESS_ADB_ONLY ) {
+        ALOGE("Shell root access is disabled by a system setting - enable it under settings -> developer options");
+        deny(&ctx);
     }
 
     if (ctx.from.uid == AID_ROOT || ctx.from.uid == AID_SHELL)
