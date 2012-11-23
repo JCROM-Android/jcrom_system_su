@@ -24,7 +24,7 @@ int send_intent(const struct su_context *ctx,
 {
 	char command[PATH_MAX];
 
-	sprintf(command, "(/system/bin/am broadcast -a '%s' --es socket '%s' --ei caller_uid '%d' --ei allow '%d' --ei version_code '%d' %s) > /dev/null",
+	sprintf(command, "(/system/bin/am broadcast -a '%s' --es socket '%s' --ei caller_uid '%d' --ei allow '%d' --ei version_code '%d' --user 0 %s) > /dev/null",
 			action, socket_path, ctx->from.uid, allow, VERSION_CODE,
 			strcmp(action, ACTION_RESULT) ? "" : "&");
 
